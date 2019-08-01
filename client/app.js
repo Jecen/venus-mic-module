@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import components from './components'
 import views from  './views'
+import pkg from '../package.json'
 
 import 'iview/dist/styles/iview.css'
 import 'root/assets/css/reset-1.3.3.css'
@@ -31,8 +32,12 @@ const initModule = (state, emitter, baseRouter) => {
   router.beforeEach((to, from, next) => { // eslint-disable-line
     // 模块路由对路径无匹配的视图时，返回给Base路由做处理
     if (to.matched.length === 0) {
-      app.$destroy()
-      baseRouter.push(to)
+      if (to.path.indexOf(`/${pkg.name}`) === 0) {
+        next(to.path.replace(`/${pkg.name}`, ''))
+      } else {
+        app.$destroy()
+        baseRouter.push(to)
+      }
     } else {
       next()
     }
